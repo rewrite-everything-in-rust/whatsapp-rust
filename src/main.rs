@@ -93,6 +93,10 @@ fn main() {
                                 "QR code received (valid for {} seconds):",
                                 timeout.as_secs()
                             );
+                            // Print QR code to terminal
+                            qr2term::print_qr(&code).unwrap_or_else(|e| {
+                                error!("Failed to render QR code: {}", e);
+                            });
                             info!("\n{}\n", code);
                             info!("----------------------------------------");
                         }
@@ -224,7 +228,7 @@ fn main() {
                             }
                         }
                         Event::Connected(_) => {
-                            info!("✅ Bot connected successfully!");
+                            info!("[INFO]Bot connected successfully!");
                         }
                         Event::Receipt(receipt) => {
                             info!(
@@ -233,7 +237,7 @@ fn main() {
                             );
                         }
                         Event::LoggedOut(_) => {
-                            error!("❌ Bot was logged out!");
+                            error!("[ERROR]Bot was logged out!");
                         }
                         _ => {
                             // debug!("Received unhandled event: {:?}", event);

@@ -1613,7 +1613,7 @@ mod tests {
         };
 
         println!(
-            "❌ Step 2: Lookup with phone number address failed (expected): {}",
+            "[ERROR]Step 2: Lookup with phone number address failed (expected): {}",
             phone_protocol_address
         );
         assert!(

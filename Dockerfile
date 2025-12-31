@@ -1,4 +1,5 @@
-FROM rust:slim-bookworm AS base
+# Using nightly base image to avoid toolchain download issues
+FROM rustlang/rust:nightly-slim AS base
 
 RUN apt-get update && apt-get install -y \
     pkg-config \
@@ -12,6 +13,8 @@ WORKDIR /app
 # Planner Stage
 FROM base AS planner
 COPY . .
+# Remove rust-toolchain.toml to force using the image's rust version
+RUN rm -f rust-toolchain.toml
 RUN cargo chef prepare --recipe-path recipe.json
 
 # Cacher Stage
@@ -24,6 +27,8 @@ FROM base AS builder
 COPY --from=cacher /app/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
 COPY . .
+# Remove rust-toolchain.toml here too
+RUN rm -f rust-toolchain.toml
 RUN cargo build --release
 
 # Runtime Stage
