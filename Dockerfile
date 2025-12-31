@@ -1,11 +1,9 @@
-# Using nightly base image to avoid toolchain download issues
-FROM rustlang/rust:nightly-slim AS base
+# Using Alpine for a smaller footprint
+FROM rust:alpine AS base
 
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
-    libsqlite3-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Install build dependencies
+# build-base is needed for compiling C dependencies (like sqlite3-sys bundled)
+RUN apk add --no-cache build-base
 
 RUN cargo install cargo-chef 
 WORKDIR /app
@@ -13,8 +11,6 @@ WORKDIR /app
 # Planner Stage
 FROM base AS planner
 COPY . .
-# Remove rust-toolchain.toml to force using the image's rust version
-RUN rm -f rust-toolchain.toml
 RUN cargo chef prepare --recipe-path recipe.json
 
 # Cacher Stage
@@ -27,29 +23,32 @@ FROM base AS builder
 COPY --from=cacher /app/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
 COPY . .
-# Remove rust-toolchain.toml here too
-RUN rm -f rust-toolchain.toml
-RUN cargo build --release
+RUN cargo build --release --locked
 
 # Runtime Stage
-FROM debian:bookworm-slim
+FROM alpine:latest
 
-RUN apt-get update && apt-get install -y \
-    libsqlite3-0 \
+# Install runtime dependencies
+# ca-certificates for SSL/TLS, tzdata for timezones, tini for signal handling
+RUN apk add --no-cache \
     ca-certificates \
     tzdata \
-    && rm -rf /var/lib/apt/lists/*
+    tini \
+    libgcc
 
 WORKDIR /app
 
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+# Create a non-root user
+# RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
+# Copy the binary
 COPY --from=builder /app/target/release/whatsapp-rust /app/whatsapp-rust
-RUN chown appuser:appgroup /app/whatsapp-rust
+# RUN chown appuser:appgroup /app/whatsapp-rust
 
-USER appuser
+# USER appuser
 VOLUME ["/app/data"]
 ENV RUST_LOG=info
 WORKDIR /app/data
 
-ENTRYPOINT ["/app/whatsapp-rust"]
+# Use tini as the entrypoint to handle signals correctly (like SIGTERM)
+ENTRYPOINT ["/sbin/tini", "--", "/app/whatsapp-rust"]

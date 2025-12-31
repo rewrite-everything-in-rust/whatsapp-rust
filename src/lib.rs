@@ -2,37 +2,30 @@ pub use wacore::{proto_helpers, store::traits};
 pub use wacore_binary::builder::NodeBuilder;
 pub use waproto;
 
-pub mod http;
 pub mod types;
 
 pub mod client;
 pub use client::Client;
-pub mod download;
-pub mod handlers;
-pub mod handshake;
-pub mod jid_utils;
-pub mod keepalive;
-pub mod mediaconn;
-pub mod message;
-pub mod pair;
-pub mod pair_code;
-pub mod request;
-pub mod send;
+pub mod auth;
+pub use auth::{handshake, pair, pair_code, prekeys, session};
+
+pub mod sync;
+pub use sync::{appstate_sync, history_sync, sync_task, usync};
+
+pub mod messaging;
+pub use messaging::{download, message, receipt, send, upload};
 pub use send::SendOptions;
-pub mod session;
+
+pub mod net;
+pub use net::{keepalive, mediaconn, request, retry, transport};
+
+pub mod handlers;
+pub mod pdo;
 pub mod socket;
 pub mod store;
-pub mod transport;
-pub mod upload;
 
-pub mod pdo;
-pub mod prekeys;
-pub mod receipt;
-pub mod retry;
-
-pub mod appstate_sync;
-pub mod history_sync;
-pub mod usync;
+pub mod utils;
+pub use utils::{http, jid_utils, logger, version};
 
 pub mod features;
 pub use features::{
@@ -44,8 +37,6 @@ pub use features::{
 pub mod bot;
 pub mod lid_pn_cache;
 pub mod spam_report;
-pub mod sync_task;
-pub mod version;
 
 pub use spam_report::{SpamFlow, SpamReportRequest, SpamReportResult};
 
