@@ -4,6 +4,11 @@ services:
     image: whatsapp-rust:latest
     container_name: whatsapp-rust
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     volumes:
       - ./data:/app/data
     environment:
