@@ -1,0 +1,11 @@
+services:
+  whatsapp-bot:
+    build: .
+    image: whatsapp-rust:latest
+    container_name: whatsapp-rust
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+    environment:
+      - RUST_LOG=info
+    # command: ["--phone", "1234567890"] # Uncomment to use pair code
