@@ -1,0 +1,1 @@
+mod bot_tests;

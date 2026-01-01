@@ -1,0 +1,138 @@
+use super::super::router::*;
+use super::super::traits::StanzaHandler;
+use crate::test_utils::MockHttpClient;
+use indexmap::IndexMap;
+use std::sync::Arc;
+use wacore_binary::node::{Node, NodeContent};
+
+#[derive(Debug)]
+struct MockHandler {
+    tag: &'static str,
+    handled: std::sync::atomic::AtomicBool,
+}
+
+impl MockHandler {
+    fn new(tag: &'static str) -> Self {
+        Self {
+            tag,
+            handled: std::sync::atomic::AtomicBool::new(false),
+        }
+    }
+
+    fn was_handled(&self) -> bool {
+        self.handled.load(std::sync::atomic::Ordering::SeqCst)
+    }
+}
+
+#[async_trait::async_trait]
+impl StanzaHandler for MockHandler {
+    fn tag(&self) -> &'static str {
+        self.tag
+    }
+
+    async fn handle(
+        &self,
+        _client: Arc<crate::client::Client>,
+        _node: Arc<Node>,
+        _cancelled: &mut bool,
+    ) -> bool {
+        self.handled
+            .store(true, std::sync::atomic::Ordering::SeqCst);
+        true
+    }
+}
+
+#[test]
+fn test_router_registration() {
+    let mut router = StanzaRouter::new();
+    let handler = Arc::new(MockHandler::new("test"));
+
+    router.register(handler);
+    assert_eq!(router.handler_count(), 1);
+}
+
+#[test]
+#[should_panic(expected = "Handler for tag 'test' already registered")]
+fn test_router_double_registration_panics() {
+    let mut router = StanzaRouter::new();
+    let handler1 = Arc::new(MockHandler::new("test"));
+    let handler2 = Arc::new(MockHandler::new("test"));
+
+    router.register(handler1);
+    router.register(handler2); // Should panic
+}
+
+#[tokio::test]
+async fn test_router_dispatch_found() {
+    let mut router = StanzaRouter::new();
+    let handler = Arc::new(MockHandler::new("test"));
+    let handler_ref = handler.clone();
+
+    router.register(handler);
+
+    // Create owned Node wrapped in Arc
+    let mut attrs = IndexMap::new();
+    attrs.insert("id".to_string(), "test-id".to_string());
+    let node = Arc::new(Node::new(
+        "test",
+        attrs,
+        Some(NodeContent::String("test".to_string())),
+    ));
+
+    // Create a minimal client for testing with an in-memory database
+    use crate::store::persistence_manager::PersistenceManager;
+
+    let backend = Arc::new(
+        crate::store::SqliteStore::new(":memory:")
+            .await
+            .expect("test backend should initialize"),
+    ) as Arc<dyn crate::store::traits::Backend>;
+    let pm = PersistenceManager::new(backend)
+        .await
+        .expect("persistence manager should initialize");
+    let transport = Arc::new(crate::transport::mock::MockTransportFactory::new());
+    let http_client = Arc::new(MockHttpClient);
+    let (client, _rx) =
+        crate::client::Client::new(Arc::new(pm), transport, http_client, None).await;
+
+    let mut cancelled = false;
+    let result = router.dispatch(client, node, &mut cancelled).await;
+
+    assert!(result);
+    assert!(handler_ref.was_handled());
+}
+
+#[tokio::test]
+async fn test_router_dispatch_not_found() {
+    let router = StanzaRouter::new();
+
+    // Create owned Node wrapped in Arc
+    let mut attrs = IndexMap::new();
+    attrs.insert("id".to_string(), "test-id".to_string());
+    let node = Arc::new(Node::new(
+        "unknown",
+        attrs,
+        Some(NodeContent::String("test".to_string())),
+    ));
+
+    // Create a minimal client for testing with an in-memory database
+    use crate::store::persistence_manager::PersistenceManager;
+
+    let backend = Arc::new(
+        crate::store::SqliteStore::new(":memory:")
+            .await
+            .expect("test backend should initialize"),
+    ) as Arc<dyn crate::store::traits::Backend>;
+    let pm = PersistenceManager::new(backend)
+        .await
+        .expect("persistence manager should initialize");
+    let transport = Arc::new(crate::transport::mock::MockTransportFactory::new());
+    let http_client = Arc::new(MockHttpClient);
+    let (client, _rx) =
+        crate::client::Client::new(Arc::new(pm), transport, http_client, None).await;
+
+    let mut cancelled = false;
+    let result = router.dispatch(client, node, &mut cancelled).await;
+
+    assert!(!result);
+}

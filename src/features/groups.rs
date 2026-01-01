@@ -1,28 +1,15 @@
 use crate::client::Client;
+use crate::domain::{GroupMetadata, GroupParticipant};
 use crate::request::InfoQuery;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 use wacore::client::context::GroupInfo;
+use wacore::types::message::AddressingMode;
 use wacore_binary::builder::NodeBuilder;
 use wacore_binary::jid::{GROUP_SERVER, Jid};
 use wacore_binary::node::NodeContent;
 
 static G_US_JID: LazyLock<Jid> = LazyLock::new(|| Jid::new("", GROUP_SERVER));
-
-#[derive(Debug, Clone)]
-pub struct GroupMetadata {
-    pub id: Jid,
-    pub subject: String,
-    pub participants: Vec<GroupParticipant>,
-    pub addressing_mode: crate::types::message::AddressingMode,
-}
-
-#[derive(Debug, Clone)]
-pub struct GroupParticipant {
-    pub jid: Jid,
-    pub phone_number: Option<Jid>,
-    pub is_admin: bool,
-}
 
 pub struct Groups<'a> {
     client: &'a Client,
@@ -62,15 +49,15 @@ impl<'a> Groups<'a> {
             .optional_string("addressing_mode")
             .unwrap_or("pn");
         let addressing_mode = match addressing_mode_str {
-            "lid" => crate::types::message::AddressingMode::Lid,
-            _ => crate::types::message::AddressingMode::Pn,
+            "lid" => AddressingMode::Lid,
+            _ => AddressingMode::Pn,
         };
 
         for participant_node in group_node.get_children_by_tag("participant") {
             let participant_jid = participant_node.attrs().jid("jid");
             participants.push(participant_jid.clone());
 
-            if addressing_mode == crate::types::message::AddressingMode::Lid
+            if addressing_mode == AddressingMode::Lid
                 && let Some(phone_number) = participant_node.attrs().optional_jid("phone_number")
             {
                 lid_to_pn_map.insert(participant_jid.user.clone(), phone_number);
@@ -220,35 +207,5 @@ impl<'a> Groups<'a> {
 impl Client {
     pub fn groups(&self) -> Groups<'_> {
         Groups::new(self)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_group_metadata_struct() {
-        let jid: Jid = "123456789@g.us"
-            .parse()
-            .expect("test group JID should be valid");
-        let participant_jid: Jid = "1234567890@s.whatsapp.net"
-            .parse()
-            .expect("test participant JID should be valid");
-
-        let metadata = GroupMetadata {
-            id: jid.clone(),
-            subject: "Test Group".to_string(),
-            participants: vec![GroupParticipant {
-                jid: participant_jid,
-                phone_number: None,
-                is_admin: true,
-            }],
-            addressing_mode: crate::types::message::AddressingMode::Pn,
-        };
-
-        assert_eq!(metadata.subject, "Test Group");
-        assert_eq!(metadata.participants.len(), 1);
-        assert!(metadata.participants[0].is_admin);
     }
 }

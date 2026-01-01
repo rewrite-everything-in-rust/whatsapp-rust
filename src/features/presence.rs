@@ -9,7 +9,7 @@ pub enum PresenceStatus {
 }
 
 impl PresenceStatus {
-    fn as_str(&self) -> &'static str {
+    pub(crate) fn as_str(&self) -> &'static str {
         match self {
             PresenceStatus::Available => "available",
             PresenceStatus::Unavailable => "unavailable",
@@ -89,22 +89,5 @@ impl Client {
     #[allow(clippy::wrong_self_convention)]
     pub fn presence(&self) -> Presence<'_> {
         Presence::new(self)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_presence_status_display() {
-        assert_eq!(PresenceStatus::Available.to_string(), "available");
-        assert_eq!(PresenceStatus::Unavailable.to_string(), "unavailable");
-    }
-
-    #[test]
-    fn test_presence_status_as_str() {
-        assert_eq!(PresenceStatus::Available.as_str(), "available");
-        assert_eq!(PresenceStatus::Unavailable.as_str(), "unavailable");
     }
 }

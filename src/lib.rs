@@ -2,6 +2,7 @@ pub use wacore::{proto_helpers, store::traits};
 pub use wacore_binary::builder::NodeBuilder;
 pub use waproto;
 
+pub mod domain;
 pub mod types;
 
 pub mod client;
@@ -29,9 +30,14 @@ pub use utils::{http, jid_utils, logger, version};
 
 pub mod features;
 pub use features::{
-    Blocking, BlocklistEntry, ChatStateType, Chatstate, ContactInfo, Contacts, GroupMetadata,
-    GroupParticipant, Groups, IsOnWhatsAppResult, Mex, MexError, MexErrorExtensions,
-    MexGraphQLError, MexRequest, MexResponse, Presence, PresenceStatus, ProfilePicture, UserInfo,
+    Blocking, BlocklistEntry, ChatStateType, Chatstate, Contacts, Groups, Mex, MexError,
+    MexErrorExtensions, MexGraphQLError, MexRequest, MexResponse, Presence,
+};
+
+// Re-export domain types for convenience
+pub use domain::{
+    AddressingMode, ContactInfo, Event, GroupMetadata, GroupParticipant, IsOnWhatsAppResult,
+    MessageInfo, MessageSource, ProfilePicture, UserInfo,
 };
 
 pub mod bot;

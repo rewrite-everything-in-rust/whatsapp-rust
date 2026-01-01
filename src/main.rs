@@ -56,7 +56,7 @@ fn main() {
             .with_backend(backend)
             .with_transport_factory(transport_factory)
             .with_http_client(http_client);
-            
+
         // Optional: Override WhatsApp version
         // builder = builder.with_version((2, 3000, 1027868167));
 
@@ -84,9 +84,7 @@ fn main() {
             }
         };
 
-        bot_handle
-            .await
-            .expect("Bot task failed");
+        bot_handle.await.expect("Bot task failed");
     });
 }
 

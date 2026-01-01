@@ -1,4 +1,3 @@
-
 use log::{error, info};
 use std::io::Cursor;
 use wacore::download::{Downloadable, MediaType};

@@ -1,4 +1,5 @@
 use crate::client::Client;
+use crate::domain::{ContactInfo, IsOnWhatsAppResult, ProfilePicture, UserInfo};
 use crate::jid_utils::server_jid;
 use crate::request::InfoQuery;
 use anyhow::{Result, anyhow};
@@ -7,49 +8,6 @@ use std::collections::HashMap;
 use wacore_binary::builder::NodeBuilder;
 use wacore_binary::jid::Jid;
 use wacore_binary::node::{Node, NodeContent};
-
-#[derive(Debug, Clone)]
-pub struct IsOnWhatsAppResult {
-    pub jid: Jid,
-    pub is_registered: bool,
-}
-
-#[derive(Debug, Clone)]
-pub struct ContactInfo {
-    pub jid: Jid,
-
-    pub lid: Option<Jid>,
-
-    pub is_registered: bool,
-
-    pub is_business: bool,
-
-    pub status: Option<String>,
-
-    pub picture_id: Option<u64>,
-}
-
-#[derive(Debug, Clone)]
-pub struct ProfilePicture {
-    pub id: String,
-
-    pub url: String,
-
-    pub direct_path: Option<String>,
-}
-
-#[derive(Debug, Clone)]
-pub struct UserInfo {
-    pub jid: Jid,
-
-    pub lid: Option<Jid>,
-
-    pub status: Option<String>,
-
-    pub picture_id: Option<String>,
-
-    pub is_business: bool,
-}
 
 pub struct Contacts<'a> {
     client: &'a Client,
@@ -453,59 +411,5 @@ impl<'a> Contacts<'a> {
 impl Client {
     pub fn contacts(&self) -> Contacts<'_> {
         Contacts::new(self)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_contact_info_struct() {
-        let jid: Jid = "1234567890@s.whatsapp.net"
-            .parse()
-            .expect("test JID should be valid");
-        let lid: Jid = "12345678@lid".parse().expect("test JID should be valid");
-
-        let info = ContactInfo {
-            jid: jid.clone(),
-            lid: Some(lid.clone()),
-            is_registered: true,
-            is_business: false,
-            status: Some("Hey there!".to_string()),
-            picture_id: Some(123456789),
-        };
-
-        assert!(info.is_registered);
-        assert!(!info.is_business);
-        assert_eq!(info.status, Some("Hey there!".to_string()));
-        assert_eq!(info.picture_id, Some(123456789));
-        assert!(info.lid.is_some());
-    }
-
-    #[test]
-    fn test_profile_picture_struct() {
-        let pic = ProfilePicture {
-            id: "123456789".to_string(),
-            url: "https://example.com/pic.jpg".to_string(),
-            direct_path: Some("/v/pic.jpg".to_string()),
-        };
-
-        assert_eq!(pic.id, "123456789");
-        assert_eq!(pic.url, "https://example.com/pic.jpg");
-        assert!(pic.direct_path.is_some());
-    }
-
-    #[test]
-    fn test_is_on_whatsapp_result_struct() {
-        let jid: Jid = "1234567890@s.whatsapp.net"
-            .parse()
-            .expect("test JID should be valid");
-        let result = IsOnWhatsAppResult {
-            jid,
-            is_registered: true,
-        };
-
-        assert!(result.is_registered);
     }
 }

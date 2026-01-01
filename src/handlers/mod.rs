@@ -7,3 +7,6 @@ pub mod receipt;
 pub mod router;
 pub mod traits;
 pub mod unimplemented;
+
+#[cfg(test)]
+mod tests;

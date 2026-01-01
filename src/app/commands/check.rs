@@ -5,7 +5,7 @@ use whatsapp_rust::bot::MessageContext;
 
 pub async fn run(ctx: &MessageContext) {
     let mut sys = System::new_all();
-    sys.refresh_all(); 
+    sys.refresh_all();
 
     let sender = &ctx.info.source.sender;
     let chat = &ctx.info.source.chat;
@@ -41,22 +41,21 @@ pub async fn run(ctx: &MessageContext) {
 
     // Determine participant JID for quoting (ContextInfo)
     let participant_jid = if ctx.info.source.is_from_me {
-         if let Some(pn) = ctx.client.get_pn().await {
-             pn.to_string()
-         } else {
-             "".to_string()
-         }
+        if let Some(pn) = ctx.client.get_pn().await {
+            pn.to_string()
+        } else {
+            "".to_string()
+        }
     } else {
-        ctx.info.source.sender.to_string() 
-    };
-    
-    // Safety fallback if get_pn fails or something, though sender_jid is usually fine.
-    let participant_jid = if participant_jid.is_empty() {
-         ctx.info.source.sender.to_string()
-    } else {
-         participant_jid
+        ctx.info.source.sender.to_string()
     };
 
+    // Safety fallback if get_pn fails or something, though sender_jid is usually fine.
+    let participant_jid = if participant_jid.is_empty() {
+        ctx.info.source.sender.to_string()
+    } else {
+        participant_jid
+    };
 
     let reply = format!(
         "*System Check*\n\n\
@@ -97,14 +96,18 @@ fn get_cgroup_memory_limit() -> Option<u64> {
     // Try cgroup v2
     if let Ok(contents) = std::fs::read_to_string("/sys/fs/cgroup/memory.max") {
         if let Ok(val) = contents.trim().parse::<u64>() {
-             if val != 0 && val != u64::MAX { return Some(val); }
+            if val != 0 && val != u64::MAX {
+                return Some(val);
+            }
         }
     }
     // Try cgroup v1
     if let Ok(contents) = std::fs::read_to_string("/sys/fs/cgroup/memory/memory.limit_in_bytes") {
         if let Ok(val) = contents.trim().parse::<u64>() {
             // A very large number usually means no limit (PAGE_COUNTER_MAX approx 9e18)
-             if val < 9_000_000_000_000_000_000 { return Some(val); }
+            if val < 9_000_000_000_000_000_000 {
+                return Some(val);
+            }
         }
     }
     None
@@ -114,39 +117,45 @@ fn get_cgroup_memory_usage() -> Option<u64> {
     // Try cgroup v2
     if let Ok(contents) = std::fs::read_to_string("/sys/fs/cgroup/memory.current") {
         if let Ok(val) = contents.trim().parse::<u64>() {
-             return Some(val);
+            return Some(val);
         }
     }
     // Try cgroup v1
     if let Ok(contents) = std::fs::read_to_string("/sys/fs/cgroup/memory/memory.usage_in_bytes") {
         if let Ok(val) = contents.trim().parse::<u64>() {
-             return Some(val);
+            return Some(val);
         }
     }
     // Fallback to simpler usage file commonly found in some setups
-     if let Ok(contents) = std::fs::read_to_string("/sys/fs/cgroup/memory/memory.usage") {
+    if let Ok(contents) = std::fs::read_to_string("/sys/fs/cgroup/memory/memory.usage") {
         if let Ok(val) = contents.trim().parse::<u64>() {
-             return Some(val);
+            return Some(val);
         }
     }
     None
 }
 
 fn get_cgroup_cpu_limit() -> Option<f64> {
-     // Check v2 (cpu.max)
+    // Check v2 (cpu.max)
     if let Ok(contents) = std::fs::read_to_string("/sys/fs/cgroup/cpu.max") {
         let parts: Vec<&str> = contents.trim().split_whitespace().collect();
-         if parts.len() == 2 {
-             if let (Ok(quota), Ok(period)) = (parts[0].parse::<f64>(), parts[1].parse::<f64>()) {
-                 if quota > 0.0 && period > 0.0 { return Some(quota / period); }
-             }
-         }
+        if parts.len() == 2 {
+            if let (Ok(quota), Ok(period)) = (parts[0].parse::<f64>(), parts[1].parse::<f64>()) {
+                if quota > 0.0 && period > 0.0 {
+                    return Some(quota / period);
+                }
+            }
+        }
     }
 
-     // Check v1
-    let quota = std::fs::read_to_string("/sys/fs/cgroup/cpu/cpu.cfs_quota_us").ok().and_then(|s| s.trim().parse::<f64>().ok());
-    let period = std::fs::read_to_string("/sys/fs/cgroup/cpu/cpu.cfs_period_us").ok().and_then(|s| s.trim().parse::<f64>().ok());
-    
+    // Check v1
+    let quota = std::fs::read_to_string("/sys/fs/cgroup/cpu/cpu.cfs_quota_us")
+        .ok()
+        .and_then(|s| s.trim().parse::<f64>().ok());
+    let period = std::fs::read_to_string("/sys/fs/cgroup/cpu/cpu.cfs_period_us")
+        .ok()
+        .and_then(|s| s.trim().parse::<f64>().ok());
+
     if let (Some(q), Some(p)) = (quota, period) {
         if q > 0.0 && p > 0.0 {
             return Some(q / p);

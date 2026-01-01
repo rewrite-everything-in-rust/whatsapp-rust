@@ -126,7 +126,9 @@ fn test_live_decryption_with_go_values() {
         "Final decrypted plaintext does not match Go's result!"
     );
 
-    println!("[OK] Test `test_live_decryption_with_go_values` passed! The GCM primitive is correct.");
+    println!(
+        "[OK] Test `test_live_decryption_with_go_values` passed! The GCM primitive is correct."
+    );
 }
 
 #[test]
