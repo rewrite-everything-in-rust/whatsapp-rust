@@ -1008,7 +1008,7 @@ mod tests {
             "cloud_api should have None"
         );
 
-        println!("✅ Missing pre-key bundle skips device gracefully");
+        println!("[OK] Missing pre-key bundle skips device gracefully");
     }
 
     /// Test case: All devices missing pre-key bundles
@@ -1037,7 +1037,7 @@ mod tests {
         assert!(resolver.prekey_bundles[&device2].is_none());
         assert!(resolver.prekey_bundles[&device3].is_none());
 
-        println!("✅ All devices missing bundles handled gracefully");
+        println!("[OK] All devices missing bundles handled gracefully");
     }
 
     /// Test case: Large group with mixed device availability
@@ -1080,7 +1080,7 @@ mod tests {
             "Should have 10 total entries"
         );
 
-        println!("✅ Large group with 7 available, 3 unavailable devices");
+        println!("[OK] Large group with 7 available, 3 unavailable devices");
     }
 
     /// Test case: Cloud API / HOSTED device without pre-key
@@ -1134,7 +1134,7 @@ mod tests {
             "Cloud API device should not have a bundle (they don't use Signal protocol)"
         );
 
-        println!("✅ Cloud API device has no prekey bundle (expected behavior)");
+        println!("[OK] Cloud API device has no prekey bundle (expected behavior)");
     }
 
     /// Test case: HOSTED devices are filtered from group SKDM distribution
@@ -1227,7 +1227,7 @@ mod tests {
             "@hosted server device should be excluded"
         );
 
-        println!("✅ Hosted devices correctly filtered from group SKDM distribution");
+        println!("[OK] Hosted devices correctly filtered from group SKDM distribution");
     }
 
     /// Test case: Device recovery between retries
@@ -1256,7 +1256,7 @@ mod tests {
             "Second attempt: device should be available"
         );
 
-        println!("✅ Device recovery between retries works correctly");
+        println!("[OK] Device recovery between retries works correctly");
     }
 
     /// Helper function to create a mock PreKeyBundle with valid types
@@ -1313,7 +1313,7 @@ mod tests {
         let unknown = resolver.phone_to_lid.get("999999999").cloned();
         assert!(unknown.is_none(), "Should return None for unknown phone");
 
-        println!("✅ MockSendContextResolver phone_to_lid mapping works correctly");
+        println!("[OK] MockSendContextResolver phone_to_lid mapping works correctly");
     }
 
     /// Test that the resolver correctly maps phone numbers to LIDs.
@@ -1344,7 +1344,7 @@ mod tests {
             "100000037037034"
         );
 
-        println!("✅ Multiple phone-to-LID mappings work correctly");
+        println!("[OK] Multiple phone-to-LID mappings work correctly");
     }
 
     /// Test the scenario that caused the original bug:
@@ -1399,7 +1399,7 @@ mod tests {
             "Device IDs should match"
         );
 
-        println!("✅ LID session lookup scenario works correctly:");
+        println!("[OK] LID session lookup scenario works correctly:");
         println!("   - PN JID: {} -> Address: {}", pn_device_jid, pn_address);
         println!("   - LID JID: {} -> Address: {}", lid_jid, lid_address);
         println!("   - Would check for session under LID address first");
@@ -1435,7 +1435,7 @@ mod tests {
         );
         assert_eq!(lid_jid.to_string(), "100000012345678:33@lid");
 
-        println!("✅ Companion device ID (33) correctly preserved in LID JID");
+        println!("[OK] Companion device ID (33) correctly preserved in LID JID");
     }
 
     /// Test that LID lookup only applies to s.whatsapp.net JIDs.
@@ -1473,6 +1473,6 @@ mod tests {
             "PN JID should be s.whatsapp.net"
         );
 
-        println!("✅ LID lookup correctly limited to s.whatsapp.net JIDs");
+        println!("[OK] LID lookup correctly limited to s.whatsapp.net JIDs");
     }
 }

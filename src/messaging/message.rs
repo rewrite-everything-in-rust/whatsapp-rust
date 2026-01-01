@@ -1598,7 +1598,7 @@ mod tests {
         }
 
         println!(
-            "✅ Step 1: Stored sender key under LID address: {}",
+            "[OK] Step 1: Stored sender key under LID address: {}",
             lid_protocol_address
         );
 
@@ -1629,7 +1629,7 @@ mod tests {
             device_guard.load_sender_key(&lid_sender_key_name).await
         };
 
-        println!("✅ Step 3: Lookup with LID address succeeded (this is the fix)");
+        println!("[OK] Step 3: Lookup with LID address succeeded (this is the fix)");
         assert!(
             lid_lookup_result
                 .expect("lookup should not error")
@@ -1637,7 +1637,7 @@ mod tests {
             "Sender key SHOULD be found when looking up with LID address (same as storage)"
         );
 
-        println!("\n🎯 Summary:");
+        println!("\n[INFO] Summary:");
         println!("   - LID protocol address: {}", lid_protocol_address);
         println!("   - Phone protocol address: {}", phone_protocol_address);
         println!(
@@ -1754,7 +1754,7 @@ mod tests {
         }
 
         println!(
-            "✅ All {} LID participants have isolated sender keys",
+            "[OK] All {} LID participants have isolated sender keys",
             participants.len()
         );
     }
@@ -1958,7 +1958,7 @@ mod tests {
             "15551234567"
         );
 
-        println!("✅ sender_alt extraction working correctly for LID groups");
+        println!("[OK] sender_alt extraction working correctly for LID groups");
     }
 
     /// Test that device query logic uses phone numbers for LID participants
@@ -2028,7 +2028,7 @@ mod tests {
         assert!(jids_to_query.iter().any(|j| j.user == "15551234567"));
         assert!(jids_to_query.iter().any(|j| j.user == "551234567890"));
 
-        println!("✅ LID-to-phone mapping working correctly for device queries");
+        println!("[OK] LID-to-phone mapping working correctly for device queries");
     }
 
     /// Test edge case: Group with mixed LID and phone number participants
@@ -2083,7 +2083,7 @@ mod tests {
             assert_eq!(jid.server, SERVER_JID);
         }
 
-        println!("✅ Mixed LID and phone number participants handled correctly");
+        println!("[OK] Mixed LID and phone number participants handled correctly");
     }
 
     /// Test edge case: Own JID check in LID mode
@@ -2120,7 +2120,7 @@ mod tests {
         assert_eq!(own_jid_to_check.user, "15551234567");
         assert_eq!(own_jid_to_check.server, SERVER_JID);
 
-        println!("✅ Own JID check correctly uses phone number in LID mode");
+        println!("[OK] Own JID check correctly uses phone number in LID mode");
     }
 
     /// Test that sender key operations always use the display JID (LID)
@@ -2204,7 +2204,7 @@ mod tests {
             "Sender key should NOT be found with encryption JID (phone number)"
         );
 
-        println!("✅ Sender key operations correctly use display JID, not encryption JID");
+        println!("[OK] Sender key operations correctly use display JID, not encryption JID");
     }
 
     /// Test edge case: Second message with only skmsg (no pkmsg/msg)
@@ -2266,7 +2266,7 @@ mod tests {
                 .expect("Failed to process SKDM");
         }
 
-        println!("✅ Step 1: Sender key established for {}", sender_jid);
+        println!("[OK] Step 1: Sender key established for {}", sender_jid);
 
         // Step 2: Create a message with ONLY skmsg (no pkmsg/msg)
         // This simulates the second message after session is established
@@ -2309,7 +2309,7 @@ mod tests {
         // After the fix, it should decrypt successfully.
         client.handle_encrypted_message(message_node).await;
 
-        println!("✅ Step 2: Second message with only skmsg processed successfully");
+        println!("[OK] Step 2: Second message with only skmsg processed successfully");
 
         // The test passes if we reach here without errors
         // In a real scenario, we'd verify the message was decrypted and the event was dispatched
@@ -2392,7 +2392,7 @@ mod tests {
         // The key here is that this didn't panic or crash
         // The fix ensures that when UntrustedIdentity occurs, the deletion uses the full
         // protocol address (e.g., "559981212574.0") not just the name part (e.g., "559981212574")
-        println!("✅ UntrustedIdentity error handling:");
+        println!("[OK] UntrustedIdentity error handling:");
         println!("   - Error caught gracefully without panic");
         println!("   - Deletion uses full protocol address: <name>.<device_id>");
         println!("   - No fatal error propagated");
@@ -2468,7 +2468,7 @@ mod tests {
 
         log::info!("Test: Batch processing completed - success: {}", success);
 
-        println!("✅ Error handling in batch processing:");
+        println!("[OK] Error handling in batch processing:");
         println!("   - Multiple messages processed without panic");
         println!("   - Each error handled independently");
         println!("   - Batch processor continues through all messages");
@@ -2533,7 +2533,7 @@ mod tests {
 
         log::info!("Test: Group message processed - success: {}", success);
 
-        println!("✅ Error handling in group chat:");
+        println!("[OK] Error handling in group chat:");
         println!("   - Sender with error handled gracefully");
         println!("   - No panic when processing group messages with errors");
         println!("   - Error doesn't affect group processing");
@@ -2628,7 +2628,7 @@ mod tests {
             "Sender should be own LID"
         );
 
-        println!("✅ Self-sent DM via LID:");
+        println!("[OK] Self-sent DM via LID:");
         println!("   - is_from_me correctly detected: true");
         println!("   - sender_alt correctly NOT set (peer_recipient_pn is recipient's PN)");
         println!("   - Decryption will use own PN via is_from_me fallback path");
@@ -2729,7 +2729,7 @@ mod tests {
             "Sender should be other user's LID"
         );
 
-        println!("✅ DM from other user via LID:");
+        println!("[OK] DM from other user via LID:");
         println!("   - is_from_me correctly detected: false");
         println!("   - sender_alt correctly set from sender_pn attribute");
         println!("   - Decryption will use sender_alt for session lookup");
@@ -2819,7 +2819,7 @@ mod tests {
             "Sender should be own LID"
         );
 
-        println!("✅ DM to self (self-chat):");
+        println!("[OK] DM to self (self-chat):");
         println!("   - is_from_me correctly detected: true");
         println!("   - sender_alt correctly NOT set");
         println!("   - Decryption will use own PN via is_from_me fallback path");
@@ -2894,7 +2894,7 @@ mod tests {
             "Cached LID should match the sender_lid from the message"
         );
 
-        println!("✅ test_lid_pn_cache_populated_on_message_with_sender_lid passed:");
+        println!("[OK] test_lid_pn_cache_populated_on_message_with_sender_lid passed:");
         println!(
             "   - Received DM from {}@s.whatsapp.net with sender_lid={}@lid",
             phone, lid
@@ -2948,7 +2948,7 @@ mod tests {
             "Cache should NOT be populated for messages without sender_lid"
         );
 
-        println!("✅ test_lid_pn_cache_not_populated_without_sender_lid passed:");
+        println!("[OK] test_lid_pn_cache_not_populated_without_sender_lid passed:");
         println!("   - Received DM without sender_lid attribute");
         println!("   - Cache correctly remains empty");
     }
@@ -3021,7 +3021,7 @@ mod tests {
             "Cached phone number should match"
         );
 
-        println!("✅ test_lid_pn_cache_populated_for_lid_sender_with_participant_pn passed:");
+        println!("[OK] test_lid_pn_cache_populated_for_lid_sender_with_participant_pn passed:");
         println!("   - Received message from LID sender with participant_pn");
         println!("   - Cache correctly populated with bidirectional mapping");
     }
@@ -3077,7 +3077,7 @@ mod tests {
             "Cached LID should be correct after multiple messages"
         );
 
-        println!("✅ test_lid_pn_cache_handles_repeated_messages passed:");
+        println!("[OK] test_lid_pn_cache_handles_repeated_messages passed:");
         println!("   - Received 3 messages from same sender");
         println!("   - Cache correctly maintains the mapping");
     }
@@ -3228,7 +3228,7 @@ mod tests {
             "Protocol address should be in LID format"
         );
 
-        println!("✅ test_pn_message_uses_lid_for_session_lookup_when_mapping_known passed:");
+        println!("[OK] test_pn_message_uses_lid_for_session_lookup_when_mapping_known passed:");
         println!("   - PN message with sender_lid attribute correctly uses LID for session lookup");
         println!("   - Protocol address: {}", protocol_address);
     }
@@ -3341,7 +3341,7 @@ mod tests {
             "Protocol address should be in LID format from cached mapping"
         );
 
-        println!("✅ test_pn_message_uses_cached_lid_without_sender_lid_attribute passed:");
+        println!("[OK] test_pn_message_uses_cached_lid_without_sender_lid_attribute passed:");
         println!("   - PN message without sender_lid attribute uses cached LID for session lookup");
         println!("   - Protocol address: {}", protocol_address);
     }
@@ -3441,7 +3441,7 @@ mod tests {
             "Protocol address should be in PN format when no LID mapping"
         );
 
-        println!("✅ test_pn_message_uses_pn_when_no_lid_mapping passed:");
+        println!("[OK] test_pn_message_uses_pn_when_no_lid_mapping passed:");
         println!("   - PN message without LID mapping uses PN for session lookup");
         println!("   - Protocol address: {}", protocol_address);
     }

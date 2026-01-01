@@ -1913,7 +1913,7 @@ mod tests {
         );
 
         info!(
-            "✅ test_ack_behavior_for_incoming_stanzas passed: Client correctly differentiates which stanzas to acknowledge."
+            "[OK] test_ack_behavior_for_incoming_stanzas passed: Client correctly differentiates which stanzas to acknowledge."
         );
     }
 
@@ -1961,7 +1961,7 @@ mod tests {
         );
 
         info!(
-            "✅ test_plaintext_buffer_pool_reuses_buffers passed: Buffer pool properly manages plaintext buffers"
+            "[OK] test_plaintext_buffer_pool_reuses_buffers passed: Buffer pool properly manages plaintext buffers"
         );
     }
 
@@ -2031,7 +2031,7 @@ mod tests {
         );
 
         info!(
-            "✅ test_ack_waiter_resolves passed: ACK response correctly resolves pending waiters"
+            "[OK] test_ack_waiter_resolves passed: ACK response correctly resolves pending waiters"
         );
     }
 
@@ -2069,7 +2069,7 @@ mod tests {
         );
 
         info!(
-            "✅ test_ack_without_matching_waiter passed: ACK without matching waiter handled gracefully"
+            "[OK] test_ack_without_matching_waiter passed: ACK without matching waiter handled gracefully"
         );
     }
 
@@ -2141,7 +2141,7 @@ mod tests {
             "Different phone number should not have a mapping"
         );
 
-        info!("✅ test_lid_pn_cache_basic_operations passed: LID-PN cache works correctly");
+        info!("[OK] test_lid_pn_cache_basic_operations passed: LID-PN cache works correctly");
     }
 
     /// Test that the lid_pn_cache respects timestamp-based conflict resolution.
@@ -2229,7 +2229,7 @@ mod tests {
         );
 
         info!(
-            "✅ test_lid_pn_cache_timestamp_resolution passed: Timestamp-based resolution works correctly"
+            "[OK] test_lid_pn_cache_timestamp_resolution passed: Timestamp-based resolution works correctly"
         );
     }
 
@@ -2286,7 +2286,7 @@ mod tests {
         );
 
         info!(
-            "✅ test_get_lid_for_phone_via_send_context_resolver passed: SendContextResolver correctly returns cached LID"
+            "[OK] test_get_lid_for_phone_via_send_context_resolver passed: SendContextResolver correctly returns cached LID"
         );
     }
 
@@ -2339,7 +2339,7 @@ mod tests {
             elapsed
         );
 
-        info!("✅ test_wait_for_offline_delivery_end_returns_immediately_when_flag_set passed");
+        info!("[OK] test_wait_for_offline_delivery_end_returns_immediately_when_flag_set passed");
     }
 
     /// Test that wait_for_offline_delivery_end times out when the flag is NOT set.
@@ -2391,7 +2391,7 @@ mod tests {
             elapsed
         );
 
-        info!("✅ test_wait_for_offline_delivery_end_times_out_when_flag_not_set passed");
+        info!("[OK] test_wait_for_offline_delivery_end_times_out_when_flag_not_set passed");
     }
 
     /// Test that wait_for_offline_delivery_end returns when notified.
@@ -2439,7 +2439,7 @@ mod tests {
             elapsed
         );
 
-        info!("✅ test_wait_for_offline_delivery_end_returns_on_notify passed");
+        info!("[OK] test_wait_for_offline_delivery_end_returns_on_notify passed");
     }
 
     /// Test that the offline_sync_completed flag starts as false.
@@ -2473,7 +2473,7 @@ mod tests {
             "offline_sync_completed should be false when Client is first created"
         );
 
-        info!("✅ test_offline_sync_flag_initially_false passed");
+        info!("[OK] test_offline_sync_flag_initially_false passed");
     }
 
     /// Test the complete offline sync lifecycle:
@@ -2534,7 +2534,7 @@ mod tests {
         assert!(result, "Waiter should have completed successfully");
         assert!(client.offline_sync_completed.load(Ordering::Relaxed));
 
-        info!("✅ test_offline_sync_lifecycle passed");
+        info!("[OK] test_offline_sync_lifecycle passed");
     }
 
     /// Test that establish_primary_phone_session_immediate returns error when no PN is set.
@@ -2574,7 +2574,7 @@ mod tests {
             error_msg
         );
 
-        info!("✅ test_establish_primary_phone_session_fails_without_pn passed");
+        info!("[OK] test_establish_primary_phone_session_fails_without_pn passed");
     }
 
     /// Test that ensure_e2e_sessions waits for offline sync to complete.
@@ -2653,7 +2653,7 @@ mod tests {
             "ensure_e2e_sessions should complete after offline sync"
         );
 
-        info!("✅ test_ensure_e2e_sessions_waits_for_offline_sync passed");
+        info!("[OK] test_ensure_e2e_sessions_waits_for_offline_sync passed");
     }
 
     /// Integration test: Verify that the immediate session establishment does NOT
@@ -2732,6 +2732,6 @@ mod tests {
             result.unwrap().is_ok()
         );
 
-        info!("✅ test_immediate_session_does_not_wait_for_offline_sync passed");
+        info!("[OK] test_immediate_session_does_not_wait_for_offline_sync passed");
     }
 }

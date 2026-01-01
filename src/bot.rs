@@ -375,7 +375,7 @@ impl BotBuilder {
     ///     .on_event(|event, client| async move {
     ///         match event {
     ///             Event::PairingCode { code, timeout } => {
-    ///                 println!("Enter this code on your phone: {}", code);
+    ///                 log::info!("Enter this code on your phone: {}", code);
     ///             }
     ///             _ => {}
     ///         }

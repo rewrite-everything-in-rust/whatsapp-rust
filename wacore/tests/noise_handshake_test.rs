@@ -87,7 +87,7 @@ fn test_server_static_key_decryption_with_go_values() {
         "Final decrypted plaintext does not match Go's result!"
     );
 
-    println!("✅ Test passed! Cryptographic primitives are behaving as expected.");
+    println!("[OK] Test passed! Cryptographic primitives are behaving as expected.");
 }
 
 #[test]
@@ -126,7 +126,7 @@ fn test_live_decryption_with_go_values() {
         "Final decrypted plaintext does not match Go's result!"
     );
 
-    println!("✅ Test `test_live_decryption_with_go_values` passed! The GCM primitive is correct.");
+    println!("[OK] Test `test_live_decryption_with_go_values` passed! The GCM primitive is correct.");
 }
 
 #[test]
@@ -253,7 +253,7 @@ fn test_full_handshake_flow_with_go_data() {
         "Mismatch on HASH after decrypt 2"
     );
 
-    println!("✅ All handshake crypto steps match Go implementation!");
+    println!("[OK] All handshake crypto steps match Go implementation!");
 }
 
 #[test]

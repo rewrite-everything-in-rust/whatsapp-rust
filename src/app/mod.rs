@@ -4,6 +4,7 @@ use wacore::types::events::Event;
 use whatsapp_rust::bot::MessageContext;
 
 pub mod bot_logic;
+pub mod commands;
 
 pub async fn handle_event(event: Event, client: std::sync::Arc<whatsapp_rust::client::Client>) {
     match event {

@@ -19,20 +19,20 @@ use whatsapp_rust::utils::logger;
 //   cargo run -- -p 15551234567 -c MYCODE12        # Short form
 
 fn main() {
-    // Parse CLI arguments for phone number and optional custom code
+    logger::init();
+
+    // Parse CLI arguments
     let args: Vec<String> = std::env::args().collect();
     let phone_number = parse_arg(&args, "--phone", "-p");
     let custom_code = parse_arg(&args, "--code", "-c");
 
     if let Some(ref phone) = phone_number {
-        eprintln!("Phone number provided: {}", phone);
+        info!("Phone number provided: {}", phone);
         if let Some(ref code) = custom_code {
-            eprintln!("Custom pair code: {}", code);
+            info!("Custom pair code: {}", code);
         }
-        eprintln!("Will use pair code authentication (concurrent with QR)");
+        info!("Using pair code authentication (concurrent with QR)");
     }
-
-    logger::init();
 
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
@@ -47,7 +47,7 @@ fn main() {
                 return;
             }
         };
-        info!("SQLite backend initialized successfully.");
+        info!("SQLite backend initialized.");
 
         let transport_factory = TokioWebSocketTransportFactory::new();
         let http_client = UreqHttpClient::new();
@@ -56,10 +56,10 @@ fn main() {
             .with_backend(backend)
             .with_transport_factory(transport_factory)
             .with_http_client(http_client);
-        // Optional: Override the WhatsApp version (normally auto-fetched)
+            
+        // Optional: Override WhatsApp version
         // builder = builder.with_version((2, 3000, 1027868167));
 
-        // Add pair code authentication if phone number provided
         if let Some(phone) = phone_number {
             builder = builder.with_pair_code(PairCodeOptions {
                 phone_number: phone,
@@ -76,9 +76,6 @@ fn main() {
             .await
             .expect("Failed to build bot");
 
-        // If you want and need, you can get the client:
-        // let client = bot.client();
-
         let bot_handle = match bot.run().await {
             Ok(handle) => handle,
             Err(e) => {
@@ -89,7 +86,7 @@ fn main() {
 
         bot_handle
             .await
-            .expect("Bot task should complete without panicking");
+            .expect("Bot task failed");
     });
 }
 
