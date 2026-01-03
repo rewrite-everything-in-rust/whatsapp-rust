@@ -77,6 +77,31 @@ impl MediaPing for wa::message::VideoMessage {
     }
 }
 
+impl MediaPing for wa::message::StickerMessage {
+    fn media_type(&self) -> MediaType {
+        MediaType::Sticker
+    }
+
+    fn build_pong_reply(&self, upload: UploadResponse) -> wa::Message {
+        wa::Message {
+            sticker_message: Some(Box::new(wa::message::StickerMessage {
+                url: Some(upload.url),
+                direct_path: Some(upload.direct_path),
+                media_key: Some(upload.media_key),
+                file_enc_sha256: Some(upload.file_enc_sha256),
+                file_sha256: Some(upload.file_sha256),
+                file_length: Some(upload.file_length),
+                mimetype: self.mimetype.clone(),
+                height: self.height,
+                width: self.width,
+                is_animated: self.is_animated,
+                ..Default::default()
+            })),
+            ..Default::default()
+        }
+    }
+}
+
 fn get_pingable_media<'a>(message: &'a wa::Message) -> Option<&'a (dyn MediaPing + 'a)> {
     let base_message = message.get_base_message();
 
@@ -88,6 +113,9 @@ fn get_pingable_media<'a>(message: &'a wa::Message) -> Option<&'a (dyn MediaPing
     if let Some(msg) = &base_message.video_message
         && msg.caption.as_deref() == Some("ping")
     {
+        return Some(&**msg);
+    }
+    if let Some(msg) = &base_message.sticker_message {
         return Some(&**msg);
     }
 

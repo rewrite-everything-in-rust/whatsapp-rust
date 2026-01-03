@@ -19,7 +19,7 @@ pub struct MessageContext {
     pub message: Box<wa::Message>,
     pub info: MessageInfo,
     pub client: Arc<Client>,
-}
+}       
 
 impl MessageContext {
     pub async fn send_message(&self, message: wa::Message) -> Result<String, anyhow::Error> {
